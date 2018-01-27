@@ -1,0 +1,3 @@
+NodeJS SerialPort info:
+http://thinkingonthinking.com/serial-communication-with-nodejs/
+https://www.npmjs.com/package/serialport
