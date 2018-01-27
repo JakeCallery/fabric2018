@@ -1,0 +1,16 @@
+{
+  "name": "fabricserver",
+  "version": "0.0.1",
+  "description": "Fabric 2018 Server",
+  "main": "FabricServer.js",
+  "scripts": {
+    "start": "node FabricServer.js"
+  },
+  "author": "Jake Callery",
+  "license": "",
+  "dependencies": {
+    "express": "4.16.2",
+    "path": "0.12.7",
+    "ws": "4.0.0"
+  }
+}
