@@ -1,9 +1,18 @@
 let SerialPort = require("serialport");
 
+/*
 let port = new SerialPort("COM8", {
     baudRate: 57600,
     autoOpen: false
 });
+*/
+
+let port = new SerialPort("/dev/ttyACM0", {
+    baudRate: 57600,
+    autoOpen: false
+});
+
+
 
 port.open(($err) => {
     if($err) {
