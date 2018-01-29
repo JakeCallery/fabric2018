@@ -1,7 +1,7 @@
 const Url = require('url');
-const Log4js = require('log4js');
 const Client = require('./Client');
 const Path = require('path');
+const Log4js = require('log4js');
 let l = Log4js.getLogger(Path.basename(__filename));
 l.level = 'ALL';
 
@@ -25,11 +25,44 @@ module.exports = class ClientsManager {
             l.debug('New Connection: ', $connection);
             const location = Url.parse($req.url,true);
             l.info((new Date()) + ' Connection accepted: ' + $req.connection.remoteAddress);
-
-            let client = new Client($connection);
-
+            this.addClient($connection);
         });
+
+        this.wss.on('message', ($msg) => {
+            l.debug('Incoming Message: ', $msg);
+        });
+
+        this.wss.on('close', ($code, $reason) => {
+            l.debug('Caught Client Close: ')
+        });
+
     };
+
+    addClient($connection){
+        let client = new Client($connection);
+
+        client.on(Client.DISCONNECTED_EVENT, ($data) => {
+            l.debug('Caught Disconnect: ' + client.id);
+            this.removeClient(client.id);
+        });
+
+        this.clientList.push(client);
+        l.debug('Added Client: ', client.id);
+    }
+
+    removeClient($clientId){
+        let listLen = this.clientList.length;
+        for(let i = 0; i < listLen; i++){
+            if(this.clientList[i].id === $clientId){
+                this.clientList.splice(i, 1);
+                l.debug('Removed Client: ', $clientId);
+                break;
+            }
+        }
+
+        l.error('Failed to remove Client (not found): ', $clientId);
+        return null;
+    }
 
     messageToClient($client, $msgType, $msg) {
         if(!$client){
@@ -43,8 +76,7 @@ module.exports = class ClientsManager {
             message: $msg
         };
 
-        $client.connection.send(JSON.stringify(message));
-
+        $client.sendMessage(JSON.stringify(message));
     }
 
     getClientById($clientId){
@@ -56,8 +88,19 @@ module.exports = class ClientsManager {
             }
         }
 
-        //Didin't find, return null
+        //Didn't find, return null
         l.warn('GetClientByID, could not find client: ' + $clientId);
+        return null;
+    }
+
+    getClientIndex($clientId){
+        for(let i = 0; i < listLen; i++) {
+            if (this.clientList[i].id === $clientId) {
+                return i;
+            }
+        }
+
+        l.warn('Could not get client index (not found)');
         return null;
     }
 
