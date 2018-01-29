@@ -51,17 +51,24 @@ module.exports = class ClientsManager {
     }
 
     removeClient($clientId){
+        l.trace('Removing Client: ' + $clientId);
         let listLen = this.clientList.length;
+        let removedClient = null;
         for(let i = 0; i < listLen; i++){
             if(this.clientList[i].id === $clientId){
-                this.clientList.splice(i, 1);
+                removedClient = this.clientList.splice(i, 1);
                 l.debug('Removed Client: ', $clientId);
                 break;
             }
         }
 
-        l.error('Failed to remove Client (not found): ', $clientId);
-        return null;
+        if(removedClient == null){
+            l.error('Failed to remove Client (not found): ', $clientId);
+            return null;
+        } else {
+            return removedClient;
+        }
+
     }
 
     messageToClient($client, $msgType, $msg) {

@@ -18,11 +18,18 @@ module.exports = class Client extends EventEmitter {
         l.debug('New Client: ' + this.ip, this.id);
 
         this.connection.on('close', ($code, $reason) => {
-            l.info('Peer ' + this.ip + ' disconnected.');
+            l.info('Peer ' + this.ip + ' / ' + this.id + ' disconnected.');
             l.debug('ReasonCode: ', $code);
             l.debug('Reason: ', $reason);
 
             this.emit(Client.DISCONNECTED_EVENT);
+        });
+
+        this.connection.on('error', ($err, $reason) => {
+            l.warn('Connection Error Code: ', $err.code);
+            if($err.code === 'ECONNRESET'){
+                l.warn('Client went away abruptly: ', this.ip, this.id);
+            }
         });
     }
 
