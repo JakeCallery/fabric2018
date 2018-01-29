@@ -6,7 +6,7 @@ import GlobalEventBus from 'jac/events/GlobalEventBus';
 import JacEvent from 'jac/events/JacEvent';
 import BlobUtils from 'jac/utils/BlobUtils';
 
-class WSManager extends EventDispatcher {
+export default class WSManager extends EventDispatcher {
     constructor($doc) {
         super();
         let self = this;
@@ -19,8 +19,10 @@ class WSManager extends EventDispatcher {
         this.pingIntervalId = null;
 
         //Delegates
+        this.handleRequestConnectDelegate = EventUtils.bind(self, self.handleRequestConnect);
 
         //Events
+        this.geb.addEventListener('requestConnect', this.handleRequestConnectDelegate);
 
     }
 
@@ -42,7 +44,7 @@ class WSManager extends EventDispatcher {
 
             //Start ping
             this.pingIntervalId = setInterval(() => {
-                l.debug('Sending Ping');
+                //l.debug('Sending Ping');
                 this.sendPing();
             }, 2000);
 
@@ -147,6 +149,14 @@ class WSManager extends EventDispatcher {
         }
 
     }
+    handleRequestConnect($evt) {
+        this.init();
+
+        //TODO: Start here
+        //Get Client ID from server (server will send
+        //Save Client ID to LocalClient
+        //Send "Name" from DOM to server
+
+    }
 }
 
-export default WSManager;

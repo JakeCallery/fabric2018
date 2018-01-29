@@ -6,7 +6,7 @@ html, body {
     width: 100%;
     padding: 0;
     margin: 0;
-    background-color: #FFFFFF;
+    background-color: #333333;
 }
 
 body {
@@ -33,14 +33,16 @@ button {
     cursor: pointer;
 }
 
-.addScoreButton {
-    margin-top: 0.2em;
+.nameDiv {
+    padding: 0 0 0 5px;
+    margin: 0;
 }
 
-.addTextScoreButton {
-    margin-top: 0;
+.nameLabel {
+    color: #dddddd;
+    margin: 0;
+    padding: 0;
 }
-
 .simpleButton {
     width:100px;
     height:40px;
@@ -68,6 +70,3 @@ button {
     cursor: default;
 }
 
-.pasteCanvas {
-    background-color: #222222;
-}
