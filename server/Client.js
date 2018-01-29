@@ -8,16 +8,17 @@ l.level = 'ALL';
 //TODO: repeated connection tests (ping/pong)
 
 module.exports = class Client extends EventEmitter {
-    constructor($connection) {
+    constructor($connection, $request) {
         super();
         this.connection = $connection;
-        this.ip = this.connection.address;
+        this.request = $request;
+        this.ip = this.request.connection.remoteAddress;
         this.id = ShortId.generate();
 
         l.debug('New Client: ' + this.ip, this.id);
 
         this.connection.on('close', ($code, $reason) => {
-            l.info('Peer ' + this.connection.address + ' disconnected.');
+            l.info('Peer ' + this.ip + ' disconnected.');
             l.debug('ReasonCode: ', $code);
             l.debug('Reason: ', $reason);
 

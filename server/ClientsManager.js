@@ -22,10 +22,10 @@ module.exports = class ClientsManager {
 
     init() {
         this.wss.on('connection', ($connection, $req) => {
-            l.debug('New Connection: ', $connection);
+            l.debug('New Connection: ', $req.connection.remoteAddress);
             const location = Url.parse($req.url,true);
             l.info((new Date()) + ' Connection accepted: ' + $req.connection.remoteAddress);
-            this.addClient($connection);
+            this.addClient($connection, $req);
         });
 
         this.wss.on('message', ($msg) => {
@@ -38,8 +38,8 @@ module.exports = class ClientsManager {
 
     };
 
-    addClient($connection){
-        let client = new Client($connection);
+    addClient($connection, $request){
+        let client = new Client($connection, $request);
 
         client.on(Client.DISCONNECTED_EVENT, ($data) => {
             l.debug('Caught Disconnect: ' + client.id);
