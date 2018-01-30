@@ -3,6 +3,7 @@
 
 ##Possible Future
 - Clean up handshake code
+- Track last ping time, kill client if not heard from recently
 
 ##Bugs
 
