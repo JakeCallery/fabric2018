@@ -16,9 +16,16 @@ export default class RequestManager extends EventDispatcher {
 
         //Delegates
         this.requestSetNameDelegate = EventUtils.bind(self, self.handleRequestSetName);
+        this.nameSetDelegate = EventUtils.bind(self, self.handleNameSet);
 
         //Events
         this.geb.addEventListener('requestSetName', this.requestSetNameDelegate);
+        this.geb.addEventListener('nameSet', this.nameSetDelegate);
+    }
+
+    handleNameSet($evt) {
+        l.debug('Caught name Set: ', $evt.data);
+        this.geb.dispatchEvent(new JacEvent('fullyConnected'));
     }
 
     handleRequestSetName($evt) {

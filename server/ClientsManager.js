@@ -29,19 +29,12 @@ module.exports = class ClientsManager {
 
             //Create new client obj
             let client = this.addClient($connection, $req);
+            client.confirm();
 
             //Send back clientID
             let confirmMessage = new Message('confirmed', {clientId:client.id});
             client.sendMessage(confirmMessage);
 
-        });
-
-        this.wss.on('message', ($msg) => {
-            l.debug('Incoming Message: ', $msg);
-        });
-
-        this.wss.on('close', ($code, $reason) => {
-            l.debug('Caught Client Close: ', $code, $reason);
         });
 
     };

@@ -41,7 +41,6 @@ export default class WSManager extends EventDispatcher {
 
             let msg = new Message('setName', {name:$evt.data});
             self.connection.send(msg.serialize());
-
         });
 
         self.connection.addEventListener('open', ($evt) => {
@@ -163,9 +162,13 @@ export default class WSManager extends EventDispatcher {
         if(this.connection.readyState === this.connection.OPEN){
             //l.debug('Connection was last Open, sending ping...');
             try {
-                this.connection.send('ping');
+                //todo: Should this be in LocalClient?
+                let msg = new Message('ping', {});
+                this.connection.send(msg.serialize());
             } catch ($error) {
                 l.error('Ping Send Error: ', $error);
+                l.debug('Ping Send Error, reconnect?');
+                this.init();
             }
 
         }
