@@ -4,7 +4,7 @@ import EventUtils from 'jac/utils/EventUtils';
 import EventDispatcher from 'jac/events/EventDispatcher';
 import GlobalEventBus from 'jac/events/GlobalEventBus';
 import JacEvent from 'jac/events/JacEvent';
-import BlobUtils from 'jac/utils/BlobUtils';
+import Message from 'Message';
 
 export default class WSManager extends EventDispatcher {
     constructor($doc) {
@@ -30,10 +30,19 @@ export default class WSManager extends EventDispatcher {
         l.debug('WS Manager Init');
         let self = this;
 
+        //TODO: Switch to https/wss
         let host = window.document.location.host.replace(/:.*/, '');
         let websocketURL = 'ws://' + host + ':' + window.document.location.port;
         l.debug('Websocket URL: ' + websocketURL);
         self.connection = new WebSocket(websocketURL);
+
+        this.geb.addEventListener('setLocalClientName', ($evt) => {
+            l.debug('Sending Set Local Client Name Message: ', $evt.data);
+
+            let msg = new Message('setName', {name:$evt.data});
+            self.connection.send(msg.serialize());
+
+        });
 
         self.connection.addEventListener('open', ($evt) => {
             l.debug('Websocket Connected, waiting on id from server: ', $evt);
@@ -99,30 +108,43 @@ export default class WSManager extends EventDispatcher {
 
         self.connection.addEventListener('message', ($evt) => {
             l.debug('Caught Message from Server: ', $evt.data);
+            let msgObj = null;
 
-            let msgObj = JSON.parse($evt.data);
-            l.debug('Message: ', msgObj);
-
-            switch(msgObj.msgType) {
-                case 'confirmed':
-                    l.debug('Setting Connection ID to: ' + msgObj.connectionId);
-                    this.connectionId = msgObj.connectionId;
-                    this.geb.dispatchEvent(new JacEvent('wsConnected', this.connectionId));
-                    break;
-
-                case 'clientConnected':
-                    l.debug('Additional Client Connection: ', msgObj.connectionId);
-                    this.geb.dispatchEvent(new JacEvent('remoteClientConnected', msgObj.connectionId));
-                    break;
-
-                case 'clientDropped':
-                    l.debug('Client Dropped: ', msgObj.connectionId);
-                    this.geb.dispatchEvent(new JacEvent('remoteClientDropped', msgObj.connectionId));
-                    break;
-
-                default:
-                    l.debug('Unknown message type: ' + msgObj.msgType);
+            try {
+                msgObj = JSON.parse($evt.data);
+                l.debug('Message: ', msgObj);
+            } catch ($error) {
+                l.error('Error Parsing Message: ', $error);
             }
+
+            if(msgObj !== null) {
+                switch(msgObj.action) {
+                    case 'confirmed':
+                        l.debug('Setting Connection ID to: ' + msgObj.data.clientId);
+                        this.clientId = msgObj.data.clientId;
+                        this.geb.dispatchEvent(new JacEvent('clientConfirmed', msgObj.data.clientId));
+                        break;
+
+                    case 'nameSet':
+                        l.debug('Name Set Message From Server');
+                        this.geb.dispatchEvent(new JacEvent('nameSet'));
+                        break;
+
+                    case 'clientConnected':
+                        l.debug('Additional Client Connection: ', msgObj.clientId);
+                        this.geb.dispatchEvent(new JacEvent('remoteClientConnected', msgObj.data.clientId));
+                        break;
+
+                    case 'clientDropped':
+                        l.debug('Client Dropped: ', msgObj.clientId);
+                        this.geb.dispatchEvent(new JacEvent('remoteClientDropped', msgObj.data.clientId));
+                        break;
+
+                    default:
+                        l.debug('Unknown message type: ' + msgObj.type);
+                }
+            }
+
         });
     }
 
@@ -150,12 +172,8 @@ export default class WSManager extends EventDispatcher {
 
     }
     handleRequestConnect($evt) {
+        l.debug('Caught Request Connect');
         this.init();
-
-        //TODO: Start here
-        //Get Client ID from server (server will send
-        //Save Client ID to LocalClient
-        //Send "Name" from DOM to server
 
     }
 }

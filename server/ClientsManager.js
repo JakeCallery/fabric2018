@@ -1,6 +1,7 @@
 const Url = require('url');
 const Client = require('./Client');
 const Path = require('path');
+const Message = require('./Message');
 const Log4js = require('log4js');
 let l = Log4js.getLogger(Path.basename(__filename));
 l.level = 'ALL';
@@ -25,7 +26,14 @@ module.exports = class ClientsManager {
             l.debug('New Connection: ', $req.connection.remoteAddress);
             const location = Url.parse($req.url,true);
             l.info((new Date()) + ' Connection accepted: ' + $req.connection.remoteAddress);
-            this.addClient($connection, $req);
+
+            //Create new client obj
+            let client = this.addClient($connection, $req);
+
+            //Send back clientID
+            let confirmMessage = new Message('confirmed', {clientId:client.id});
+            client.sendMessage(confirmMessage);
+
         });
 
         this.wss.on('message', ($msg) => {
@@ -33,7 +41,7 @@ module.exports = class ClientsManager {
         });
 
         this.wss.on('close', ($code, $reason) => {
-            l.debug('Caught Client Close: ')
+            l.debug('Caught Client Close: ', $code, $reason);
         });
 
     };
@@ -48,6 +56,8 @@ module.exports = class ClientsManager {
 
         this.clientList.push(client);
         l.debug('Added Client: ', client.id);
+
+        return client;
     }
 
     removeClient($clientId){

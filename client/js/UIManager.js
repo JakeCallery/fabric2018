@@ -32,9 +32,18 @@ export default class UIManager extends EventDispatcher {
 
         //Delegates
         this.connectButtonClickDelegate = EventUtils.bind(self, self.handleConnectButtonClick);
+        this.handleRequestLocalClientNameDelegate = EventUtils.bind(self, self.handleRequestLocalClientName);
+        this.handleFullyConnectedDelegate = EventUtils.bind(self, self.handleFullyConnected);
 
         //Events
         this.connectButton.addEventListener('click', this.connectButtonClickDelegate);
+        this.geb.addEventListener('requestLocalClientName', this.handleRequestLocalClientNameDelegate);
+        this.geb.addEventListener('fullyConnected', this.handleFullyConnectedDelegate);
+    }
+
+    handleRequestLocalClientName($evt){
+        l.debug('Caught Request Local Client Name');
+        this.geb.dispatchEvent(new JacEvent('setLocalClientName', this.nameField.value));
     }
 
     handleConnectButtonClick($evt) {
@@ -46,13 +55,17 @@ export default class UIManager extends EventDispatcher {
             $evt.target.disabled = true;
             l.debug('Button Value: ', $evt.target.textContent);
             $evt.target.textContent = 'Connecting...';
-            this.uigeb.dispatchUIEvent('requestConnect', nameValue, ($isConnected) => {
-                 l.debug('Connect UI Event Complete: ', $isConnected);
-                 $evt.target.textContent = 'Connected';
-            });
+
+            this.geb.dispatchEvent(new JacEvent('requestConnect'));
+
         } else {
             l.warn('Name field is empty, please enter name first.');
         }
 
+    }
+
+    handleFullyConnected($evt) {
+        l.debug('Caught Fully Connected');
+        this.connectButton.textContent = 'Connected';
     }
 }
