@@ -33,7 +33,8 @@ module.exports = class ClientsManager {
 
             //Send back clientID
             let confirmMessage = new Message('confirmed', {clientId:client.id});
-            client.sendMessage(confirmMessage);
+            //client.sendMessage(confirmMessage);
+            this.messageToClient(client, 'confirmed', {clientId:client.id});
 
         });
 
@@ -50,6 +51,9 @@ module.exports = class ClientsManager {
         this.clientList.push(client);
         l.debug('Added Client: ', client.id);
 
+        //Let other clients know
+        this.messageToOtherClients(client, 'clientConnected', {clientId:client.id});
+
         return client;
     }
 
@@ -59,7 +63,7 @@ module.exports = class ClientsManager {
         let removedClient = null;
         for(let i = 0; i < listLen; i++){
             if(this.clientList[i].id === $clientId){
-                removedClient = this.clientList.splice(i, 1);
+                removedClient = this.clientList.splice(i, 1)[0];
                 l.debug('Removed Client: ', $clientId);
                 break;
             }
@@ -69,24 +73,28 @@ module.exports = class ClientsManager {
             l.error('Failed to remove Client (not found): ', $clientId);
             return null;
         } else {
+            this.messageToOtherClients(removedClient, 'clientDropped', {clientId:removedClient.id});
             return removedClient;
         }
 
     }
 
-    messageToClient($client, $msgType, $msg) {
+    messageToOtherClients($excludedClient, $msgType, $msg) {
+        for(let i = 0; i < this.clientList.length; i++) {
+            let client = this.clientList[i];
+            if(client !== $excludedClient) {
+                this.messageToClient(client, $msgType, $msg);
+            }
+        }
+    }
+
+    messageToClient($client, $msgAction, $msgData) {
         if(!$client){
-            l.error('No Client Provided, not sending message: ', $msg);
+            l.error('No Client Provided, not sending message: ', $msgData);
             return null;
         }
 
-        let message = {
-            messageType: $msgType,
-            clientId: $client.clientId,
-            message: $msg
-        };
-
-        $client.sendMessage(JSON.stringify(message));
+        $client.sendMessage(new Message($msgAction, $msgData));
     }
 
     getClientById($clientId){

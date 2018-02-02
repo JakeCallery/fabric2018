@@ -52,8 +52,9 @@ export default class WSManager extends EventDispatcher {
 
             //Start ping
             this.pingIntervalId = setInterval(() => {
+                //TODO: Put back ping eventually
                 //l.debug('Sending Ping');
-                this.sendPing();
+                //this.sendPing();
             }, 2000);
 
             this.geb.dispatchEvent(new JacEvent('wsOpened', $evt));
@@ -126,16 +127,16 @@ export default class WSManager extends EventDispatcher {
 
                     case 'nameSet':
                         l.debug('Name Set Message From Server');
-                        this.geb.dispatchEvent(new JacEvent('nameSet'));
+                        this.geb.dispatchEvent(new JacEvent('nameSet', msgObj.data.name));
                         break;
 
                     case 'clientConnected':
-                        l.debug('Additional Client Connection: ', msgObj.clientId);
+                        l.debug('Additional Client Connection: ', msgObj.data.clientId);
                         this.geb.dispatchEvent(new JacEvent('remoteClientConnected', msgObj.data.clientId));
                         break;
 
                     case 'clientDropped':
-                        l.debug('Client Dropped: ', msgObj.clientId);
+                        l.debug('Client Dropped: ', msgObj.data.clientId);
                         this.geb.dispatchEvent(new JacEvent('remoteClientDropped', msgObj.data.clientId));
                         break;
 
