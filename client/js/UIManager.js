@@ -43,7 +43,13 @@ export default class UIManager extends EventDispatcher {
 
     handleRequestLocalClientName($evt){
         l.debug('Caught Request Local Client Name');
-        this.geb.dispatchEvent(new JacEvent('setLocalClientName', this.nameField.value));
+        this.geb.dispatchEvent(new JacEvent('setLocalClientInfo',
+            {
+                name: this.nameField.value,
+                //source for random color generation: https://www.paulirish.com/2009/random-hex-color-code-snippets/
+                color: '#'+(Math.random()*(1<<24)|0).toString(16) //TODO: Make a color picker
+            }
+        ));
     }
 
     handleConnectButtonClick($evt) {

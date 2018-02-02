@@ -36,10 +36,15 @@ export default class WSManager extends EventDispatcher {
         l.debug('Websocket URL: ' + websocketURL);
         self.connection = new WebSocket(websocketURL);
 
-        this.geb.addEventListener('setLocalClientName', ($evt) => {
+        this.geb.addEventListener('setLocalClientInfo', ($evt) => {
             l.debug('Sending Set Local Client Name Message: ', $evt.data);
 
-            let msg = new Message('setName', {name:$evt.data});
+            let msg = new Message('setInfo',
+                {
+                    name:$evt.data.name,
+                    color:$evt.data.color
+
+                });
             self.connection.send(msg.serialize());
         });
 
@@ -119,15 +124,22 @@ export default class WSManager extends EventDispatcher {
 
             if(msgObj !== null) {
                 switch(msgObj.action) {
+                    //Messages for me
                     case 'confirmed':
                         l.debug('Setting Connection ID to: ' + msgObj.data.clientId);
                         this.clientId = msgObj.data.clientId;
                         this.geb.dispatchEvent(new JacEvent('clientConfirmed', msgObj.data.clientId));
                         break;
 
-                    case 'nameSet':
+                    case 'setInfo':
                         l.debug('Name Set Message From Server');
-                        this.geb.dispatchEvent(new JacEvent('nameSet', msgObj.data.name));
+                        this.geb.dispatchEvent(new JacEvent('setInfo', msgObj.data));
+                        break;
+
+                    //Messages from other clients
+                    case 'clientInfoSet':
+                        l.debug('Other Client Info Set: ', msgObj.data);
+                        this.geb.dispatchEvent(new JacEvent('clientInfoSet', msgObj.data));
                         break;
 
                     case 'clientConnected':

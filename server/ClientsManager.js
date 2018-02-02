@@ -48,11 +48,24 @@ module.exports = class ClientsManager {
             this.removeClient(client.id);
         });
 
+        client.on(Client.INFO_SET_EVENT, ($data) => {
+            l.debug('Caught Client Info Set: ', $data);
+            this.messageToOtherClients(client, 'clientInfoSet', {
+                clientId:client.id,
+                clientName:$data.name,
+                clientColor:$data.color
+            });
+        });
+
         this.clientList.push(client);
         l.debug('Added Client: ', client.id);
 
         //Let other clients know
-        this.messageToOtherClients(client, 'clientConnected', {clientId:client.id});
+        l.debug(client.id);
+        this.messageToOtherClients(client, 'clientConnected',
+            {
+                clientId:client.id
+            });
 
         return client;
     }

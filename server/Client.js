@@ -16,6 +16,7 @@ module.exports = class Client extends EventEmitter {
         this.ip = this.request.connection.remoteAddress;
         this.id = ShortId.generate();
         this.name = null;
+        this.color = null;
 
         l.debug('New Client: ' + this.ip, this.id);
 
@@ -31,10 +32,19 @@ module.exports = class Client extends EventEmitter {
 
             if(msgObj !== null){
                 switch(msgObj.action) {
-                    case 'setName':
-                        l.debug('Caught Set Name Message: ', msgObj.data.name);
+                    case 'setInfo':
+                        l.debug('Caught Set Info: ', msgObj.data.name, msgObj.data.color);
                         this.name = msgObj.data.name;
-                        this.sendMessage(new Message('nameSet', {name:this.name}));
+                        this.color = msgObj.data.color;
+
+                        let info = {
+                            name:this.name,
+                            color:this.color
+                        };
+
+                        this.sendMessage(new Message('setInfo',info));
+
+                        this.emit(Client.INFO_SET_EVENT, info);
                         break;
 
                     case 'ping':
@@ -85,4 +95,5 @@ module.exports = class Client extends EventEmitter {
 
 module.exports.DISCONNECTED_EVENT = 'disconnectedevent';
 module.exports.NEW_MESSAGE_EVENT = 'newmessageevent';
+module.exports.INFO_SET_EVENT = 'infosetevent';
 
