@@ -35,7 +35,7 @@ export default class ClientsManager extends EventDispatcher {
 
     handleLocalClientInfoSet($evt) {
         l.debug('Clients Manager Caught Local Client Info Set');
-        let localClient = new LocalClient(
+        this.localClient= new LocalClient(
             $evt.data.data.clientId,
             $evt.data.data.clientName,
             $evt.data.data.clientColor

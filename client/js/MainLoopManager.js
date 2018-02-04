@@ -20,7 +20,7 @@ export default class MainLoopManager extends EventDispatcher {
         this.lastStepStartTime = null;
         this.lastStepEndTime = null;
 
-        this.isRunning = ($isRunning === true)?true:false;
+        this.isRunning = ($isRunning === true);
 
         this.im = $inputManager;
         this.dm = $drawManager;
@@ -40,10 +40,11 @@ export default class MainLoopManager extends EventDispatcher {
     drawRun() {
         let self = this;
         if(this.isRunning) {
-            self.reqAnimFramId = window.requestAnimationFrame(this.runDelegate);
+            self.reqAnimFrameId = window.requestAnimationFrame(this.runDelegate);
         }
 
         this.stats.begin();
+        self.localInputStep();
         self.drawStep();
         this.stats.end();
     }
@@ -63,10 +64,16 @@ export default class MainLoopManager extends EventDispatcher {
         self.drawRun();
     }
 
+    localInputStep() {
+        this.im.update();
+    }
+
     drawStep() {
         //l.debug('Step...');
         this.lastStepStartTime = window.performance.now();
+
         this.dm.draw();
+
         this.lastStepEndTime = window.performance.now();
 
     }

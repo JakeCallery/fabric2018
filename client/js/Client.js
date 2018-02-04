@@ -10,6 +10,16 @@ export default class Client extends EventDispatcher{
         this.name = $name;
         this.color = $color;
 
+        this.posXList = [];
+        this.posYList= [];
+        this.fieldValList = [];
+
         l.debug('** New Client: ', $id, $name, $color);
+    }
+
+    clearPositions(){
+        this.posXList = [];
+        this.posYList = [];
+        this.fieldValList = [];
     }
 }

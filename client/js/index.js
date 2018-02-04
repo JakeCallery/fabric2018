@@ -14,9 +14,10 @@ import ClientsManager from 'ClientsManager';
 //Import through loaders
 import '../css/normalize.css';
 import '../css/main.css';
-import DrawManager from "./DrawManager";
-import MainLoopManager from "./MainLoopManager";
-import InputManager from "./InputManager";
+import DrawManager from 'DrawManager';
+import MainLoopManager from 'MainLoopManager';
+import InputManager from 'InputManager';
+import State from 'State';
 
 l.addLogTarget(new ConsoleTarget());
 l.verboseFilter = (VerboseLevel.NORMAL | VerboseLevel.TIME | VerboseLevel.LEVEL);
@@ -44,7 +45,9 @@ let wsManager = new WSManager();
 
 let uiManager = new UIManager(document);
 
-let inputManager = new InputManager(document);
+let state = new State();
+state.setClientsManager(clientsManager);
+let inputManager = new InputManager(window, clientsManager);
 let drawManager = new DrawManager(window);
 let mainLoopManager = new MainLoopManager(window, inputManager, drawManager);
 //let requestManager = new RequestManager();
