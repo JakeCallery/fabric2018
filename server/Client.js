@@ -78,7 +78,8 @@ module.exports = class Client extends EventEmitter {
 
     //TODO: Promisify message sending
     sendMessage($messageObj){
-        $messageObj.content.clientId = this.id;
+        l.debug('Sending Message: ', $messageObj);
+        $messageObj.content.myClientId = this.id;
         let msgString = $messageObj.serialize();
         this.connection.send(msgString, ($err) => {
             if($err){

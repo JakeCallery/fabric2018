@@ -46,8 +46,8 @@ module.exports = class ClientsManager {
             l.debug('Caught Client Info Set: ', $data);
             this.messageToOtherClients(client, 'remoteClientInfoSet', {
                 clientId:client.id,
-                clientName:$data.name,
-                clientColor:$data.color
+                clientName:$data.clientName,
+                clientColor:$data.clientColor
             });
         });
 
@@ -56,7 +56,7 @@ module.exports = class ClientsManager {
 
         //Let other clients know
         l.debug(client.id);
-        this.messageToOtherClients(client, 'clientConnected',
+        this.messageToOtherClients(client, 'remoteClientConnected',
             {
                 clientId:client.id
             });
@@ -80,7 +80,7 @@ module.exports = class ClientsManager {
             l.error('Failed to remove Client (not found): ', $clientId);
             return null;
         } else {
-            this.messageToOtherClients(removedClient, 'clientDropped', {clientId:removedClient.id});
+            this.messageToOtherClients(removedClient, 'remoteClientDropped', {clientId:removedClient.id});
             return removedClient;
         }
 

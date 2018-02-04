@@ -3,7 +3,7 @@ module.exports = class Message {
 
         this.content = {
             action: $msgAction,
-            clientId: null, //will be set by "sendMessage" on the client
+            myClientId: null, //will be set by "sendMessage" on the client
             data: $data
         };
     }

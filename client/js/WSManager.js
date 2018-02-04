@@ -142,13 +142,13 @@ export default class WSManager extends EventDispatcher {
                         this.geb.dispatchEvent(new JacEvent('remoteClientInfoSet', msgObj));
                         break;
 
-                    case 'clientConnected':
-                        l.debug('Additional Client Connection: ', msgObj.data.clientId);
+                    case 'remoteClientConnected':
+                        l.debug('Remote Client Connection: ', msgObj.data.clientId);
                         this.geb.dispatchEvent(new JacEvent('remoteClientConnected', msgObj.data.clientId));
                         break;
 
-                    case 'clientDropped':
-                        l.debug('Client Dropped: ', msgObj.data.clientId);
+                    case 'remoteClientDropped':
+                        l.debug('Remote Client Dropped: ', msgObj.data.clientId);
                         this.geb.dispatchEvent(new JacEvent('remoteClientDropped', msgObj.data.clientId));
                         break;
 

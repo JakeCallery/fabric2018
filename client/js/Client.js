@@ -3,13 +3,13 @@ import EventDispatcher from 'jac/events/EventDispatcher';
 import GlobalEventBus from 'jac/events/GlobalEventBus';
 import JacEvent from 'jac/events/JacEvent';
 
-export default class LocalClient extends EventDispatcher{
+export default class Client extends EventDispatcher{
     constructor($id, $name, $color) {
         super();
-        this.geb = new GlobalEventBus();
-
         this.id = $id;
         this.name = $name;
         this.color = $color;
+
+        l.debug('** New Client: ', $id, $name, $color);
     }
 }
