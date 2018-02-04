@@ -29,7 +29,7 @@ export default class MainLoopManager extends EventDispatcher {
         this.requestPauseDelegate = EventUtils.bind(self, self.handleRequestPause);
         this.requestPlayDelegate = EventUtils.bind(self, self.handleRequestPlay);
         this.requestManualStepDelegate = EventUtils.bind(self, self.handleRequestManualStep);
-        this.runDelegate = EventUtils.bind(self, self.run);
+        this.runDelegate = EventUtils.bind(self, self.drawRun);
 
         //Events
         this.geb.addEventListener('requestPause', this.requestPauseDelegate);
@@ -37,18 +37,18 @@ export default class MainLoopManager extends EventDispatcher {
         this.geb.addEventListener('requestManualStep', this.requestManualStepDelegate);
     }
 
-    run() {
+    drawRun() {
         let self = this;
         if(this.isRunning) {
             self.reqAnimFramId = window.requestAnimationFrame(this.runDelegate);
         }
 
         this.stats.begin();
-        self.step();
+        self.drawStep();
         this.stats.end();
     }
 
-    pause() {
+    drawPause() {
         l.debug('Pausing...');
         this.isRunning = false;
         if(this.reqAnimFrameId !== null){
@@ -56,14 +56,14 @@ export default class MainLoopManager extends EventDispatcher {
         }
     }
 
-    play() {
+    drawPlay() {
         let self = this;
         self.isRunning = true;
         l.debug('Playing...');
-        self.run();
+        self.drawRun();
     }
 
-    step() {
+    drawStep() {
         //l.debug('Step...');
         this.lastStepStartTime = window.performance.now();
         this.dm.draw();
@@ -74,16 +74,16 @@ export default class MainLoopManager extends EventDispatcher {
     handleRequestManualStep($evt) {
         l.debug('Caught Request Manual Step...');
         this.isRunning = false;
-        this.step();
+        this.drawStep();
     }
 
     handleRequestPause($evt) {
         l.debug('Caught Request Pause');
-        this.pause();
+        this.drawPause();
     }
 
     handleRequestPlay($evt) {
         l.debug('Caught Request Play');
-        this.play();
+        this.drawPlay();
     }
 }
