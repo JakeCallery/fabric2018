@@ -125,7 +125,7 @@ export default class WSManager extends EventDispatcher {
             if(msgObj !== null) {
                 switch(msgObj.action) {
                     //Messages for me
-                    case 'confirmed':
+                    case 'localClientConfirmed':
                         l.debug('Setting Connection ID to: ' + msgObj.data.clientId);
                         this.clientId = msgObj.data.clientId;
                         this.geb.dispatchEvent(new JacEvent('localClientConfirmed', msgObj.data.clientId));
@@ -137,9 +137,9 @@ export default class WSManager extends EventDispatcher {
                         break;
 
                     //Messages from other clients
-                    case 'clientInfoSet':
+                    case 'removeClientInfoSet':
                         l.debug('Other Client Info Set: ', msgObj);
-                        this.geb.dispatchEvent(new JacEvent('clientInfoSet', msgObj));
+                        this.geb.dispatchEvent(new JacEvent('remoteClientInfoSet', msgObj));
                         break;
 
                     case 'clientConnected':

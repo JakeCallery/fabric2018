@@ -32,9 +32,7 @@ module.exports = class ClientsManager {
             client.confirm();
 
             //Send back clientID
-            let confirmMessage = new Message('confirmed', {clientId:client.id});
-            //client.sendMessage(confirmMessage);
-            this.messageToClient(client, 'confirmed', {clientId:client.id});
+            this.messageToClient(client, 'localClientConfirmed', {clientId:client.id});
 
         });
 

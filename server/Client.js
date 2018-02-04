@@ -88,7 +88,7 @@ module.exports = class Client extends EventEmitter {
 
     confirm() {
         l.debug('Confirming Client: ' + this.id);
-        let confirmMessage = new Message('confirmed', {clientId:this.id});
+        let confirmMessage = new Message('localClientConfirmed', {clientId:this.id});
         this.sendMessage(confirmMessage);
     }
 
