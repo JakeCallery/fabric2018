@@ -2,6 +2,7 @@ import l from 'jac/logger/Logger';
 import EventUtils from 'jac/utils/EventUtils';
 import EventDispatcher from 'jac/events/EventDispatcher';
 import GlobalEventBus from 'jac/events/GlobalEventBus';
+import Stats from 'mrdoob/Stats';
 
 export default class MainLoopManager extends EventDispatcher {
     constructor($window, $inputManager, $drawManager, $isRunning) {
@@ -11,6 +12,11 @@ export default class MainLoopManager extends EventDispatcher {
         this.geb = new GlobalEventBus();
         this.window = $window;
 
+        this.stats = new Stats();
+        this.stats.showPanel(1);
+        this.window.document.body.appendChild(this.stats.dom);
+
+        this.reqAnimFrameId = null;
         this.lastStepStartTime = null;
         this.lastStepEndTime = null;
 
@@ -34,15 +40,20 @@ export default class MainLoopManager extends EventDispatcher {
     run() {
         let self = this;
         if(this.isRunning) {
-            window.requestAnimationFrame(this.runDelegate);
+            self.reqAnimFramId = window.requestAnimationFrame(this.runDelegate);
         }
 
+        this.stats.begin();
         self.step();
+        this.stats.end();
     }
 
     pause() {
         l.debug('Pausing...');
         this.isRunning = false;
+        if(this.reqAnimFrameId !== null){
+            this.window.cancelAnimationFrame(this.reqAnimFrameId);
+        }
     }
 
     play() {
@@ -55,7 +66,9 @@ export default class MainLoopManager extends EventDispatcher {
     step() {
         //l.debug('Step...');
         this.lastStepStartTime = window.performance.now();
+        this.dm.draw();
         this.lastStepEndTime = window.performance.now();
+
     }
 
     handleRequestManualStep($evt) {

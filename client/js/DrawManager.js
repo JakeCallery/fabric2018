@@ -4,10 +4,12 @@ import EventDispatcher from 'jac/events/EventDispatcher';
 import GlobalEventBus from 'jac/events/GlobalEventBus';
 
 export default class DrawManager extends EventDispatcher {
-    constructor($doc) {
+    constructor($window) {
         super();
-        this.doc = $doc;
+        this.window = $window;
+        this.doc = $window.document;
         this.geb = new GlobalEventBus();
+        this.rafId = null;
 
         //Wait for the DOM to be ready
         this.doc.addEventListener('DOMContentLoaded', () => {
@@ -19,21 +21,13 @@ export default class DrawManager extends EventDispatcher {
         this.playAreaCanvas = this.doc.getElementById('playAreaCanvas');
         let self = this;
 
-        //Delegates
-        this.requestManualDrawDelegate = EventUtils.bind(self, self.handleManualDraw);
-
-        //Events
-        this.geb.addEventListener('requestManualDraw', this.requestManualDrawDelegate);
-
         l.debug('Draw Manager Ready');
     }
 
     draw() {
-        l.debug('Draw Called');
+        l.debug('Drawing....');
+        this.lastDrawStartTime = this.window.performance.now();
+        this.lastDrawEndTime = this.window.performance.now();
     }
 
-    handleManualDraw($evt) {
-        l.debug('Caught Request Manual Draw');
-        this.draw();
-    }
 }

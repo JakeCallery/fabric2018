@@ -45,6 +45,6 @@ let wsManager = new WSManager();
 let uiManager = new UIManager(document);
 
 let inputManager = new InputManager(document);
-let drawManager = new DrawManager(document);
+let drawManager = new DrawManager(window);
 let mainLoopManager = new MainLoopManager(window, inputManager, drawManager);
 //let requestManager = new RequestManager();
