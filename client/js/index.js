@@ -14,6 +14,7 @@ import ClientsManager from 'ClientsManager';
 //Import through loaders
 import '../css/normalize.css';
 import '../css/main.css';
+import DrawManager from "./DrawManager";
 
 l.addLogTarget(new ConsoleTarget());
 l.verboseFilter = (VerboseLevel.NORMAL | VerboseLevel.TIME | VerboseLevel.LEVEL);
@@ -38,5 +39,6 @@ geb.addEventListener('wsOpened', ($evt) => {
 //Init
 let clientsManager = new ClientsManager();
 let wsManager = new WSManager();
+let drawManager = new DrawManager(document);
 let uiManager = new UIManager(document);
 //let requestManager = new RequestManager();

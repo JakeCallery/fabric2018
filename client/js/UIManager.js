@@ -29,16 +29,20 @@ export default class UIManager extends EventDispatcher {
         //Elements
         this.connectButton = this.doc.getElementById('connectButton');
         this.nameField = this.doc.getElementById('nameField');
+        this.drawButton = this.doc.getElementById('drawButton');
 
         //Delegates
         this.connectButtonClickDelegate = EventUtils.bind(self, self.handleConnectButtonClick);
         this.handleRequestLocalClientInfoDelegate = EventUtils.bind(self, self.handleRequestLocalClientInfo);
         this.handleFullyConnectedDelegate = EventUtils.bind(self, self.handleFullyConnected);
+        this.drawButtonClickDelegate = EventUtils.bind(self, self.handleDrawButtonClick);
 
         //Events
         this.connectButton.addEventListener('click', this.connectButtonClickDelegate);
+        this.drawButton.addEventListener('click', this.drawButtonClickDelegate);
         this.geb.addEventListener('requestLocalClientInfo', this.handleRequestLocalClientInfoDelegate);
         this.geb.addEventListener('fullyConnected', this.handleFullyConnectedDelegate);
+
     }
 
     handleRequestLocalClientInfo($evt){
@@ -73,5 +77,10 @@ export default class UIManager extends EventDispatcher {
     handleFullyConnected($evt) {
         l.debug('Caught Fully Connected');
         this.connectButton.textContent = 'Connected';
+    }
+
+    handleDrawButtonClick($evt) {
+        l.debug('Caught Draw Button Click');
+        this.geb.dispatchEvent(new JacEvent('requestManualDraw'));
     }
 }

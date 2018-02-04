@@ -70,3 +70,11 @@ button {
     cursor: default;
 }
 
+.playAreaDiv {
+    background-color: #333333;
+}
+
+.playAreaCanvas {
+    width: 200px;
+    height: 100px;
+}
