@@ -3,6 +3,8 @@ import EventUtils from 'jac/utils/EventUtils';
 import EventDispatcher from 'jac/events/EventDispatcher';
 import GlobalEventBus from 'jac/events/GlobalEventBus';
 import LocalClient from 'LocalClient';
+import RemoteClient from 'RemoteClient';
+import JacEvent from "./jac/events/JacEvent";
 
 export default class ClientsManager extends EventDispatcher {
     constructor() {
@@ -10,7 +12,7 @@ export default class ClientsManager extends EventDispatcher {
         let self = this;
         this.geb = new GlobalEventBus();
 
-        this.localClient = new LocalClient();
+        this.localClient = null;
         this.otherClients = [];
 
         //Delegates
@@ -22,13 +24,31 @@ export default class ClientsManager extends EventDispatcher {
         this.geb.addEventListener('localClientConfirmed', this.localClientConfirmedDelegate);
     }
 
-    handleLocalClientInfoSet($evt) {
-        l.debug('Clients Manager Caught Local Client Info Set');
+    handleLocalClientConfirmed($evt) {
+        //Request sending of more info
+        this.geb.dispatchEvent(new JacEvent('requestLocalClientInfo'));
     }
 
-    handleLocalClientConfirmed($evt) {
-        l.debug('Clients Manager caught local client confirmed: ', this.localClient.id);
+    handleLocalClientInfoSet($evt) {
+        l.debug('Clients Manager Caught Local Client Info Set');
+        let localClient = new LocalClient(
+            $evt.data.data.clientId,
+            $evt.data.data.clientName,
+            $evt.data.data.clientColor
+        );
 
+        this.geb.dispatchEvent(new JacEvent('fullyConnected'));
+    }
+
+    handleRemoteClientInfoSet($evt) {
+        l.debug('Clients Manager Caught Remote Client Info Set', $evt.data);
+            let remoteClient = new RemoteClient(
+                $evt.data.data.clientId,
+                $evt.data.data.clientName,
+                $evt.data.data.clientColor
+            );
+
+            this.otherClients.push(remoteClient);
     }
 
 }

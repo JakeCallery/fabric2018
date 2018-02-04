@@ -39,4 +39,4 @@ geb.addEventListener('wsOpened', ($evt) => {
 let clientsManager = new ClientsManager();
 let wsManager = new WSManager();
 let uiManager = new UIManager(document);
-let requestManager = new RequestManager();
+//let requestManager = new RequestManager();

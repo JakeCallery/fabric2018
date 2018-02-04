@@ -4,7 +4,7 @@ import GlobalEventBus from 'jac/events/GlobalEventBus';
 import JacEvent from 'jac/events/JacEvent';
 
 export default class LocalClient extends EventDispatcher{
-    constructor($id, $name, $color){
+    constructor($id, $name, $color) {
         super();
         this.geb = new GlobalEventBus();
 

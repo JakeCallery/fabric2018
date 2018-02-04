@@ -37,7 +37,7 @@ export default class WSManager extends EventDispatcher {
         self.connection = new WebSocket(websocketURL);
 
         this.geb.addEventListener('setLocalClientInfo', ($evt) => {
-            l.debug('Sending Set Local Client Name Message: ', $evt.data);
+            l.debug('Sending Set Local Client info Message: ', $evt.data);
 
             let msg = new Message('setInfo',
                 {
@@ -137,7 +137,7 @@ export default class WSManager extends EventDispatcher {
                         break;
 
                     //Messages from other clients
-                    case 'removeClientInfoSet':
+                    case 'remoteClientInfoSet':
                         l.debug('Other Client Info Set: ', msgObj);
                         this.geb.dispatchEvent(new JacEvent('remoteClientInfoSet', msgObj));
                         break;

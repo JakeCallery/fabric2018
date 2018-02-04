@@ -38,8 +38,9 @@ module.exports = class Client extends EventEmitter {
                         this.color = msgObj.data.color;
 
                         let info = {
-                            name:this.name,
-                            color:this.color
+                            clientId:this.id,
+                            clientName:this.name,
+                            clientColor:this.color
                         };
 
                         this.sendMessage(new Message('localClientInfoSet',info));

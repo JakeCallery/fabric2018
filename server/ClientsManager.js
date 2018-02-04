@@ -30,10 +30,6 @@ module.exports = class ClientsManager {
             //Create new client obj
             let client = this.addClient($connection, $req);
             client.confirm();
-
-            //Send back clientID
-            this.messageToClient(client, 'localClientConfirmed', {clientId:client.id});
-
         });
 
     };
@@ -48,7 +44,7 @@ module.exports = class ClientsManager {
 
         client.on(Client.INFO_SET_EVENT, ($data) => {
             l.debug('Caught Client Info Set: ', $data);
-            this.messageToOtherClients(client, 'clientInfoSet', {
+            this.messageToOtherClients(client, 'remoteClientInfoSet', {
                 clientId:client.id,
                 clientName:$data.name,
                 clientColor:$data.color
