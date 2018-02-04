@@ -11,6 +11,9 @@ export default class MainLoopManager extends EventDispatcher {
         this.geb = new GlobalEventBus();
         this.window = $window;
 
+        this.lastStepStartTime = null;
+        this.lastStepEndTime = null;
+
         this.isRunning = ($isRunning === true)?true:false;
 
         this.im = $inputManager;
@@ -51,7 +54,8 @@ export default class MainLoopManager extends EventDispatcher {
 
     step() {
         //l.debug('Step...');
-
+        this.lastStepStartTime = window.performance.now();
+        this.lastStepEndTime = window.performance.now();
     }
 
     handleRequestManualStep($evt) {
