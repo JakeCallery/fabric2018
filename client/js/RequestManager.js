@@ -16,15 +16,15 @@ export default class RequestManager extends EventDispatcher {
 
         //Delegates
         this.requestSetInfoDelegate = EventUtils.bind(self, self.handleRequestSetInfo);
-        this.setInfoDelegate = EventUtils.bind(self, self.handleSetInfo);
+        this.localClientInfoSetDelegate = EventUtils.bind(self, self.handleLocalClientInfoSet);
 
         //Events
         this.geb.addEventListener('requestSetInfo', this.requestSetInfoDelegate);
-        this.geb.addEventListener('setInfo', this.setInfoDelegate);
+        this.geb.addEventListener('localClientInfoSet', this.localClientInfoSetDelegate);
     }
 
-    handleSetInfo($evt) {
-        l.debug('Caught name Set: ', $evt.data);
+    handleLocalClientInfoSet($evt) {
+        l.debug('Caught local Client info set: ', $evt.data);
         this.geb.dispatchEvent(new JacEvent('fullyConnected'));
     }
 

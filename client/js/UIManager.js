@@ -32,16 +32,16 @@ export default class UIManager extends EventDispatcher {
 
         //Delegates
         this.connectButtonClickDelegate = EventUtils.bind(self, self.handleConnectButtonClick);
-        this.handleRequestLocalClientNameDelegate = EventUtils.bind(self, self.handleRequestLocalClientName);
+        this.handleRequestLocalClientInfoDelegate = EventUtils.bind(self, self.handleRequestLocalClientInfo);
         this.handleFullyConnectedDelegate = EventUtils.bind(self, self.handleFullyConnected);
 
         //Events
         this.connectButton.addEventListener('click', this.connectButtonClickDelegate);
-        this.geb.addEventListener('requestLocalClientName', this.handleRequestLocalClientNameDelegate);
+        this.geb.addEventListener('requestLocalClientInfo', this.handleRequestLocalClientInfoDelegate);
         this.geb.addEventListener('fullyConnected', this.handleFullyConnectedDelegate);
     }
 
-    handleRequestLocalClientName($evt){
+    handleRequestLocalClientInfo($evt){
         l.debug('Caught Request Local Client Name');
         this.geb.dispatchEvent(new JacEvent('setLocalClientInfo',
             {

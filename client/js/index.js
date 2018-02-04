@@ -9,6 +9,7 @@ import BrowserUtils from 'jac/utils/BrowserUtils';
 import UIManager from 'UIManager';
 import RequestManager from 'RequestManager';
 import LocalClient from 'LocalClient';
+import ClientsManager from 'ClientsManager';
 
 //Import through loaders
 import '../css/normalize.css';
@@ -35,7 +36,7 @@ geb.addEventListener('wsOpened', ($evt) => {
 });
 
 //Init
-let localClient = new LocalClient();
+let clientsManager = new ClientsManager();
 let wsManager = new WSManager();
 let uiManager = new UIManager(document);
 let requestManager = new RequestManager();

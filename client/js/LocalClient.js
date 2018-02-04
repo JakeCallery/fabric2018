@@ -13,17 +13,21 @@ export default class LocalClient extends Client{
 
         this.geb = new GlobalEventBus();
 
-        this.geb.addEventListener('clientConfirmed', ($evt) => {
+        this.geb.addEventListener('localClientConfirmed', ($evt) => {
             l.debug('Local Client Caught Connected: ', $evt.data);
-            this.id = $evt.data.clientId;
-            this.geb.dispatchEvent(new JacEvent('requestLocalClientName'));
+            this.id = $evt.data;
+            this.geb.dispatchEvent(new JacEvent('requestLocalClientInfo'));
         });
 
-        this.geb.addEventListener('setLocalClientInfo', ($evt) => {
-            l.debug('Caught Set Local Client Name: ', $evt.data);
-            this.name = $evt.data.name;
-            this.color = $evt.data.color;
+        this.geb.addEventListener('localClientInfoSet', ($evt) => {
+            l.debug('Local Client Caught Info Set: ', $evt.data);
+            this.name = $evt.data.data.name;
+            this.color = $evt.data.data.color;
+
+            l.debug('Full Local Client Info: ', this.id, this.name, this.color);
         });
+
+        l.debug('--- New Local Client ---');
 
     }
 }

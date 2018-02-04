@@ -42,7 +42,7 @@ module.exports = class Client extends EventEmitter {
                             color:this.color
                         };
 
-                        this.sendMessage(new Message('setInfo',info));
+                        this.sendMessage(new Message('localClientInfoSet',info));
 
                         this.emit(Client.INFO_SET_EVENT, info);
                         break;
@@ -77,6 +77,7 @@ module.exports = class Client extends EventEmitter {
 
     //TODO: Promisify message sending
     sendMessage($messageObj){
+        $messageObj.content.clientId = this.id;
         let msgString = $messageObj.serialize();
         this.connection.send(msgString, ($err) => {
             if($err){
