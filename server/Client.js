@@ -52,6 +52,10 @@ module.exports = class Client extends EventEmitter {
                         l.trace('Caught Ping...');
                         break;
 
+                    case 'localClientUpdate':
+                        l.trace('Caught local client update: ', msgObj);
+                        break;
+
                     default:
                         l.error('Unhandled Message Action: ', msgObj.action);
                 }

@@ -19,10 +19,12 @@ export default class WSManager extends EventDispatcher {
         this.pingIntervalId = null;
 
         //Delegates
-        this.handleRequestConnectDelegate = EventUtils.bind(self, self.handleRequestConnect);
+        this.requestConnectDelegate = EventUtils.bind(self, self.handleRequestConnect);
+        this.messageToServerDelegate = EventUtils.bind(self, self.handleMessageToServer);
 
         //Events
-        this.geb.addEventListener('requestConnect', this.handleRequestConnectDelegate);
+        this.geb.addEventListener('requestConnect', this.requestConnectDelegate);
+        this.geb.addEventListener('messageToServer', this.messageToServerDelegate);
 
     }
 
@@ -91,7 +93,7 @@ export default class WSManager extends EventDispatcher {
             else if($evt.code === 1009)
                 reason = "An endpoint is terminating the connection because it has received a message that is too big for it to process.";
             else if($evt.code === 1010) // Note that this status code is not used by the server, because it can fail the WebSocket handshake instead.
-                reason = "An endpoint (client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake. <br /> Specifically, the extensions that are needed are: " + event.reason;
+                reason = "An endpoint (client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake. Specifically, the extensions that are needed are: " + event.reason;
             else if($evt.code === 1011)
                 reason = "A server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request.";
             else if($evt.code === 1015)
@@ -187,10 +189,18 @@ export default class WSManager extends EventDispatcher {
         }
 
     }
+
     handleRequestConnect($evt) {
         l.debug('Caught Request Connect');
         this.init();
+    }
 
+    handleMessageToServer($evt) {
+        if(this.connection.readyState === this.connection.OPEN) {
+            this.connection.send($evt.data.serialize());
+        } else {
+            l.debug('Cannot send Message to server, connection not OPEN');
+        }
     }
 }
 

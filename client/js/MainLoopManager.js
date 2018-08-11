@@ -1,5 +1,6 @@
 import l from 'jac/logger/Logger';
 import EventUtils from 'jac/utils/EventUtils';
+import JacEvent from 'jac/events/JacEvent';
 import EventDispatcher from 'jac/events/EventDispatcher';
 import GlobalEventBus from 'jac/events/GlobalEventBus';
 import Stats from 'mrdoob/Stats';
@@ -46,6 +47,7 @@ export default class MainLoopManager extends EventDispatcher {
         this.stats.begin();
         self.localInputStep();
         self.drawStep();
+        self.notifyServerStep();
         this.stats.end();
     }
 
@@ -76,6 +78,10 @@ export default class MainLoopManager extends EventDispatcher {
 
         this.lastStepEndTime = window.performance.now();
 
+    }
+
+    notifyServerStep() {
+        this.geb.dispatchEvent(new JacEvent('updateServer'));
     }
 
     handleRequestManualStep($evt) {

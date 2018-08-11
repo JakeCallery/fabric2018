@@ -6,7 +6,7 @@
   "scripts": {
     "webpack": "./node_modules/.bin/webpack --mode=production --env.patch --colors --progress",
     "webpack_dev": "./node_modules/.bin/webpack --mode=development --env.patch --colors --progress",
-    "watch": "./node_modules/.bin/webpack --env.patch --colors --progress --watch"
+    "watch": "./node_modules/.bin/webpack --mode=development --env.patch --colors --progress --watch"
   },
   "keywords": [
     "fabric",

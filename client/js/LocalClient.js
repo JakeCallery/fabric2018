@@ -1,13 +1,22 @@
 import l from 'jac/logger/Logger';
-import Client from './Client';
+import Client from 'Client';
 import GlobalEventBus from 'jac/events/GlobalEventBus';
 import JacEvent from 'jac/events/JacEvent';
+import EventUtils from 'jac/utils/EventUtils';
+import Message from 'Message';
 
 export default class LocalClient extends Client {
     constructor($id, $name, $color){
         super($id, $name, $color);
 
+        const self = this;
         this.geb = new GlobalEventBus();
+
+        //Delegates
+        this.updateServerDelegate = EventUtils.bind(self, self.handleUpdateServer);
+
+        //Events
+        this.geb.addEventListener('updateServer', this.updateServerDelegate);
 
         // this.geb.addEventListener('localClientConfirmed', ($evt) => {
         //     l.debug('Local Client Caught Connected: ', $evt.data);
@@ -24,6 +33,16 @@ export default class LocalClient extends Client {
         // });
 
         l.debug('--- New Local Client ---');
+    }
 
+    handleUpdateServer($evt) {
+        this.geb.dispatchEvent(new JacEvent('messageToServer', new Message('localClientUpdate', {
+            name: this.name,
+            color: this.color,
+            id: this.id,
+            x: this.posXList,
+            y: this.posYList,
+            fieldVal: this.fieldValList
+        })));
     }
 }
