@@ -4,6 +4,7 @@ import GlobalEventBus from 'jac/events/GlobalEventBus';
 import JacEvent from 'jac/events/JacEvent';
 import EventUtils from 'jac/utils/EventUtils';
 import Message from 'Message';
+import ArrayUtils from 'jac/utils/ArrayUtils';
 
 export default class LocalClient extends Client {
     constructor($id, $name, $color){
@@ -36,13 +37,14 @@ export default class LocalClient extends Client {
     }
 
     handleUpdateServer($evt) {
+        //TODO: ArrayUtils.flatten() may be too slow, refactor so as to not use multidimentional arrays
         this.geb.dispatchEvent(new JacEvent('messageToServer', new Message('localClientUpdate', {
             name: this.name,
             color: this.color,
             id: this.id,
-            x: this.xPosList,
-            y: this.yPosList,
-            fieldVal: this.fieldValList
+            x: ArrayUtils.flatten(this.xPosList),
+            y: ArrayUtils.flatten(this.yPosList),
+            fieldVal: ArrayUtils.flatten(this.fieldValList)
         })));
     }
 }

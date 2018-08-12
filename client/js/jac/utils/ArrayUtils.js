@@ -61,6 +61,21 @@ export default {
             }
         }
         return results;
+    },
+
+    flatten: ($inputArray) => {
+        let flattened = [];
+        let inputLength = $inputArray.length;
+
+        for(let i = 0; i < inputLength; ++i) {
+            let current = $inputArray[i];
+            let currentLength = $inputArray.length;
+            for(let j = 0; j < currentLength; ++j) {
+                flattened.push(current[j]);
+            }
+        }
+
+        return flattened
     }
 
 }

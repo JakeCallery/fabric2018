@@ -29,7 +29,6 @@ export default class MousuInput extends InputDevice {
             this.yPosList.push(this.mouseY);
             this.fieldValList.push(this.mouseFieldValue);
         }
-
     }
 
     handleMouseMove($evt) {
