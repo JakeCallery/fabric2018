@@ -53,7 +53,17 @@ module.exports = class Client extends EventEmitter {
                         break;
 
                     case 'localClientUpdate':
-                        l.trace('Caught local client update: ', msgObj);
+                        //l.trace('Caught local client update: ', msgObj);
+                        let data = {
+                            clientId: this.id,
+                            clientName: msgObj.data.name,
+                            clientColor: msgObj.data.color,
+                            xPosList: msgObj.data.x,
+                            yPosList: msgObj.data.y,
+                            fieldValList: msgObj.data.fieldVal
+                        };
+
+                        this.emit(Client.CLIENT_UPDATE_EVENT, data);
                         break;
 
                     default:
@@ -100,7 +110,7 @@ module.exports = class Client extends EventEmitter {
 
 };
 
-module.exports.DISCONNECTED_EVENT = 'disconnectedevent';
-module.exports.NEW_MESSAGE_EVENT = 'newmessageevent';
-module.exports.INFO_SET_EVENT = 'infosetevent';
-
+module.exports.DISCONNECTED_EVENT = 'clientdisconnectedevent';
+module.exports.NEW_MESSAGE_EVENT = 'clientnewmessageevent';
+module.exports.INFO_SET_EVENT = 'clientinfosetevent';
+module.exports.CLIENT_UPDATE_EVENT = 'clientupdateevent';

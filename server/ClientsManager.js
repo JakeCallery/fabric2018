@@ -51,6 +51,17 @@ module.exports = class ClientsManager {
             });
         });
 
+        client.on(Client.CLIENT_UPDATE_EVENT, ($data) => {
+            this.messageToOtherClients(client, 'remoteClientUpdate', {
+                clientId: client.id,
+                clientName: $data.clientName,
+                clientColor: $data.clientColor,
+                xPosList: $data.xPosList,
+                yPosList: $data.yPosList,
+                fieldValList: $data.fieldValList
+            }) ;
+        });
+
         this.clientList.push(client);
         l.debug('Added Client: ', client.id);
 
