@@ -10,6 +10,7 @@ import UIManager from 'UIManager';
 import RequestManager from 'RequestManager';
 import LocalClient from 'LocalClient';
 import ClientsManager from 'ClientsManager';
+import MouseInput from 'MouseInput';
 
 //Import through loaders
 import '../css/normalize.css';
@@ -48,6 +49,7 @@ let uiManager = new UIManager(document);
 let state = new State();
 state.setClientsManager(clientsManager);
 let inputManager = new InputManager(window, clientsManager);
+inputManager.addInputDevice(new MouseInput(document));
 let drawManager = new DrawManager(window);
 let mainLoopManager = new MainLoopManager(window, inputManager, drawManager);
 //let requestManager = new RequestManager();

@@ -11,13 +11,8 @@ export default class InputManager extends EventDispatcher {
         this.doc = $window.document;
         this.geb = new GlobalEventBus();
         this.clientsManager = $clientsManager;
-
+        this.devices = [];
         this.localClient = null;
-
-        //Local Mouse Locations
-        this.mouseX = null;
-        this.mouseY = null;
-        this.mouseFieldValue = null;
 
         //Wait for the DOM to be ready
         this.doc.addEventListener('DOMContentLoaded', () => {
@@ -34,37 +29,33 @@ export default class InputManager extends EventDispatcher {
         this.playAreaCanvas = this.doc.getElementById('playAreaCanvas');
 
         //Delegates
-        this.mouseMoveDelegate = EventUtils.bind(self, self.handleMouseMove);
         this.localClientInfoSetDelegate = EventUtils.bind(self, self.handleLocalClientInfoSet);
 
         //Events
-        this.doc.addEventListener('mousemove', this.mouseMoveDelegate);
         this.geb.addEventListener('localClientInfoSet', this.localClientInfoSetDelegate);
     }
 
-    update() {
-        //TODO: Support Touch Events
-        this.localClient.clearPositions();
-        if(this.mouseX !== null){
-            this.localClient.posXList.push(this.mouseX);
-            this.localClient.posYList.push(this.mouseY);
-            this.localClient.fieldValList.push(this.mouseFieldValue);
-        }
+    addInputDevice($inputDevice) {
+        this.devices.push($inputDevice);
 
     }
 
-    handleMouseMove($evt) {
-        if($evt.buttons === 1) {
-            //LMB down
-            this.mouseX = $evt.clientX;
-            this.mouseY = $evt.clientY;
-            this.mouseFieldValue = 20; //TODO: Update for real
-        } else if($evt.buttons === 0){
-            //clear
-            this.mouseX = null;
-            this.mouseY = null;
-            this.mouseFieldValue = null;
+    //TODO: NYI
+    removeInputDevice($inputDevice) {
+
+    }
+
+    update() {
+        this.localClient.clearPositions();
+
+        for(let i = 0; i < this.devices.length; i++) {
+            let device = this.devices[i];
+            device.update();
+            this.localClient.posXList.push(device.xPosList);
+            this.localClient.posYList.push(device.yPosList);
+            this.localClient.fieldValList.push(device.fieldValList);
         }
+
     }
 
     handleLocalClientInfoSet($evt) {

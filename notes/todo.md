@@ -3,8 +3,9 @@
   * touch / mouse points per client
   * one big array and send to all clients?
 * update coordinates to be percentages, so different screen sizes can properly handle the display
+* Remove request manager (Pretty sure that was a stupid idea)
 
-##Possible Future
+##Possible Future Updates
 * Clean up handshake code
 * Track last ping time, kill client if not heard from recently
 
