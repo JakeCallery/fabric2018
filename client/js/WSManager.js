@@ -134,8 +134,13 @@ export default class WSManager extends EventDispatcher {
                         break;
 
                     case 'localClientInfoSet':
-                        l.debug('local client info set from server');
+                        l.debug('local client info set from server: ', msgObj);
                         this.geb.dispatchEvent(new JacEvent('localClientInfoSet', msgObj));
+                        break;
+
+                    case 'fullStateUpdate':
+                        l.debug('Caught Full State Update', msgObj);
+                        this.geb.dispatchEvent(new JacEvent('fullStateUpdate', msgObj));
                         break;
 
                     //Messages from other clients

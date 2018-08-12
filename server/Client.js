@@ -17,6 +17,9 @@ module.exports = class Client extends EventEmitter {
         this.id = ShortId.generate();
         this.name = null;
         this.color = null;
+        this.xPosList = [];
+        this.yPosList = [];
+        this.fieldValList = [];
 
         l.debug('New Client: ' + this.ip, this.id);
 
@@ -54,13 +57,19 @@ module.exports = class Client extends EventEmitter {
 
                     case 'localClientUpdate':
                         //l.trace('Caught local client update: ', msgObj);
+
+                        this.name = msgObj.data.clientName;
+                        this.xPosList = msgObj.data.x;
+                        this.yPosList = msgObj.data.y;
+                        this.fieldValList = msgObj.data.fieldValList;
+
                         let data = {
                             clientId: this.id,
-                            clientName: msgObj.data.name,
-                            clientColor: msgObj.data.color,
-                            xPosList: msgObj.data.x,
-                            yPosList: msgObj.data.y,
-                            fieldValList: msgObj.data.fieldVal
+                            clientName: this.name,
+                            clientColor: this.color,
+                            xPosList: this.xPosList,
+                            yPosList: this.yPosList,
+                            fieldValList: this.fieldValList
                         };
 
                         this.emit(Client.CLIENT_UPDATE_EVENT, data);
@@ -106,6 +115,17 @@ module.exports = class Client extends EventEmitter {
         l.debug('Confirming Client: ' + this.id);
         let confirmMessage = new Message('localClientConfirmed', {clientId:this.id});
         this.sendMessage(confirmMessage);
+    }
+
+    getState() {
+        return {
+            clientId: this.id,
+            clientName: this.name,
+            clientColor: this.color,
+            clientXPosList: this.xPosList,
+            clientYPosList: this.yPosList,
+            clientFieldVarList: this.fieldValList
+        };
     }
 
 };

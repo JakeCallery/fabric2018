@@ -13,19 +13,21 @@ export default class ClientsManager extends EventDispatcher {
         this.geb = new GlobalEventBus();
 
         this.localClient = null;
-        this.otherClients = [];
+        this.remoteClients = [];
 
         //Delegates
         this.localClientInfoSetDelegate = EventUtils.bind(self, self.handleLocalClientInfoSet);
         this.localClientConfirmedDelegate = EventUtils.bind(self, self.handleLocalClientConfirmed);
         this.remoteClientInfoSetDelegate = EventUtils.bind(self, self.handleRemoteClientInfoSet);
         this.remoteClientDroppedDelegate = EventUtils.bind(self, self.handleRemoteClientDropped);
+        this.fullStateUpdateDelegate = EventUtils.bind(self, self.handleFullStateUpdate);
 
         //Events
         this.geb.addEventListener('localClientInfoSet', this.localClientInfoSetDelegate);
         this.geb.addEventListener('localClientConfirmed', this.localClientConfirmedDelegate);
         this.geb.addEventListener('remoteClientInfoSet', this.remoteClientInfoSetDelegate);
         this.geb.addEventListener('remoteClientDropped', this.remoteClientDroppedDelegate);
+        this.geb.addEventListener('fullStateUpdate', this.fullStateUpdateDelegate);
     }
 
     handleLocalClientConfirmed($evt) {
@@ -52,8 +54,18 @@ export default class ClientsManager extends EventDispatcher {
                 $evt.data.data.clientColor
             );
 
-        this.otherClients.push(remoteClient);
-        l.debug('Other Clients List Length: ', this.otherClients.length);
+        this.remoteClients.push(remoteClient);
+        l.debug('Remote Clients List Length: ', this.remoteClients.length);
+    }
+
+    handleFullStateUpdate($evt) {
+        let localClientId = this.localClient.id;
+
+        //TODO: START HERE
+        //Loop Through each obj in full state data (in $evt.data.data I think)
+        //If that remote client id doesn't exist in local list, create new remote client
+        //Update all remote clients to position and field value
+
     }
 
     handleRemoteClientDropped($evt) {
@@ -61,15 +73,15 @@ export default class ClientsManager extends EventDispatcher {
         let droppedId = $evt.data;
         let removedClient = null;
 
-        for(let i = 0; i < this.otherClients.length; i++){
-            if(this.otherClients[i].id === droppedId){
-                removedClient = this.otherClients.splice(i,1)[0];
+        for(let i = 0; i < this.remoteClients.length; i++){
+            if(this.remoteClients[i].id === droppedId){
+                removedClient = this.remoteClients.splice(i,1)[0];
                 l.debug('Removed Remote Dropped client: ', removedClient.id);
                 break;
             }
         }
 
-        l.debug('Other Clients List Length: ', this.otherClients.length);
+        l.debug('Remote Clients List Length: ', this.remoteClients.length);
 
     }
 

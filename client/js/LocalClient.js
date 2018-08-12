@@ -14,10 +14,10 @@ export default class LocalClient extends Client {
         this.geb = new GlobalEventBus();
 
         //Delegates
-        this.updateServerDelegate = EventUtils.bind(self, self.handleUpdateServer);
+        this.updateToServerDelegate = EventUtils.bind(self, self.handleUpdateToServer);
 
         //Events
-        this.geb.addEventListener('updateServer', this.updateServerDelegate);
+        this.geb.addEventListener('updateToServer', this.updateToServerDelegate);
 
         // this.geb.addEventListener('localClientConfirmed', ($evt) => {
         //     l.debug('Local Client Caught Connected: ', $evt.data);
@@ -36,7 +36,7 @@ export default class LocalClient extends Client {
         l.debug('--- New Local Client ---');
     }
 
-    handleUpdateServer($evt) {
+    handleUpdateToServer($evt) {
         //TODO: ArrayUtils.flatten() may be too slow, refactor so as to not use multidimentional arrays
         this.geb.dispatchEvent(new JacEvent('messageToServer', new Message('localClientUpdate', {
             name: this.name,

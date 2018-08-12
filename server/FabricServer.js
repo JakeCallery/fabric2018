@@ -7,6 +7,7 @@ const Client = require('./Client');
 const ClientsManager = require('./ClientsManager');
 const Path = require('path');
 const Log4js = require('log4js');
+const FullStateDO = require('./FullStateDO');
 
 //Set up logging
 let l = Log4js.getLogger(Path.basename(__filename));
@@ -26,7 +27,8 @@ const wss = new WebSocket.Server({
 });
 
 //Setup Managers
-const cm = new ClientsManager(wss);
+const fullStateDO = new FullStateDO();
+const cm = new ClientsManager(wss, fullStateDO);
 
 //Start Listening
 server.listen(8888, () => {

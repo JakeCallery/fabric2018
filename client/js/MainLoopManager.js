@@ -81,7 +81,7 @@ export default class MainLoopManager extends EventDispatcher {
     }
 
     notifyServerStep() {
-        this.geb.dispatchEvent(new JacEvent('updateServer'));
+        this.geb.dispatchEvent(new JacEvent('updateToServer'));
     }
 
     handleRequestManualStep($evt) {
