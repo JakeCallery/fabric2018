@@ -25,11 +25,11 @@ export default class State extends EventDispatcher {
         //Grab local Client Info
         let localClient = this.clientsManager.localClient;
         if(localClient) {
-            for(let i = 0; i < localClient.posXList.length; i++){
+            for(let i = 0; i < localClient.xPosList.length; i++){
                 state.push(localClient.name);
                 state.push(localClient.color);
-                state.push(localClient.posXList[i]);
-                state.push(localClient.posYList[i]);
+                state.push(localClient.xPosList[i]);
+                state.push(localClient.yPosList[i]);
                 state.push(localClient.fieldValList[i]);
             }
         }

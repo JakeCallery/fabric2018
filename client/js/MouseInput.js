@@ -23,10 +23,11 @@ export default class MousuInput extends InputDevice {
     }
 
     update() {
+        this.clearPositions();
         if(this.mouseX !== null){
-            this.localClient.posXList.push(this.mouseX);
-            this.localClient.posYList.push(this.mouseY);
-            this.localClient.fieldValList.push(this.mouseFieldValue);
+            this.xPosList.push(this.mouseX);
+            this.yPosList.push(this.mouseY);
+            this.fieldValList.push(this.mouseFieldValue);
         }
 
     }

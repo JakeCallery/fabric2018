@@ -40,8 +40,8 @@ export default class LocalClient extends Client {
             name: this.name,
             color: this.color,
             id: this.id,
-            x: this.posXList,
-            y: this.posYList,
+            x: this.xPosList,
+            y: this.yPosList,
             fieldVal: this.fieldValList
         })));
     }

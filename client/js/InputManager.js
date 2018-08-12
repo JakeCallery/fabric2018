@@ -51,8 +51,8 @@ export default class InputManager extends EventDispatcher {
         for(let i = 0; i < this.devices.length; i++) {
             let device = this.devices[i];
             device.update();
-            this.localClient.posXList.push(device.xPosList);
-            this.localClient.posYList.push(device.yPosList);
+            this.localClient.xPosList.push(device.xPosList);
+            this.localClient.yPosList.push(device.yPosList);
             this.localClient.fieldValList.push(device.fieldValList);
         }
 
