@@ -91,7 +91,7 @@ import WebCamEvent from 'jac/webCam/events/WebCamEvent';
 		    this.videoEl.src = this.URL.createObjectURL($localMediaStream);
 
 		    if(this.autoPlayVideo === true){
-			    this.videoEl.play();
+			    this.videoEl.drawPlay();
 		    }
 
 		    this.dispatchEvent(new WebCamEvent(WebCamEvent.CONNECT_SUCCESS, $localMediaStream));

@@ -29,21 +29,38 @@ export default class UIManager extends EventDispatcher {
         //Elements
         this.connectButton = this.doc.getElementById('connectButton');
         this.nameField = this.doc.getElementById('nameField');
+        this.stepButton = this.doc.getElementById('stepButton');
+        this.playButton = this.doc.getElementById('playButton');
+        this.pauseButton = this.doc.getElementById('pauseButton');
 
         //Delegates
         this.connectButtonClickDelegate = EventUtils.bind(self, self.handleConnectButtonClick);
-        this.handleRequestLocalClientNameDelegate = EventUtils.bind(self, self.handleRequestLocalClientName);
+        this.handleRequestLocalClientInfoDelegate = EventUtils.bind(self, self.handleRequestLocalClientInfo);
         this.handleFullyConnectedDelegate = EventUtils.bind(self, self.handleFullyConnected);
+        this.stepButtonClickDelegate = EventUtils.bind(self, self.handleStepButtonClick);
+        this.playButtonClickDelegate = EventUtils.bind(self, self.handlePlayButtonClick);
+        this.pauseButtonClickDelegate = EventUtils.bind(self, self.handlePauseButtonClick);
 
         //Events
         this.connectButton.addEventListener('click', this.connectButtonClickDelegate);
-        this.geb.addEventListener('requestLocalClientName', this.handleRequestLocalClientNameDelegate);
+        this.stepButton.addEventListener('click', this.stepButtonClickDelegate);
+        this.playButton.addEventListener('click', this.playButtonClickDelegate);
+        this.pauseButton.addEventListener('click', this.pauseButtonClickDelegate);
+
+        this.geb.addEventListener('requestLocalClientInfo', this.handleRequestLocalClientInfoDelegate);
         this.geb.addEventListener('fullyConnected', this.handleFullyConnectedDelegate);
+
     }
 
-    handleRequestLocalClientName($evt){
+    handleRequestLocalClientInfo($evt){
         l.debug('Caught Request Local Client Name');
-        this.geb.dispatchEvent(new JacEvent('setLocalClientName', this.nameField.value));
+        this.geb.dispatchEvent(new JacEvent('setLocalClientInfo',
+            {
+                name: this.nameField.value,
+                //source for random color generation: https://www.paulirish.com/2009/random-hex-color-code-snippets/
+                color: '#'+(Math.random()*(1<<24)|0).toString(16) //TODO: Make a color picker
+            }
+        ));
     }
 
     handleConnectButtonClick($evt) {
@@ -67,5 +84,20 @@ export default class UIManager extends EventDispatcher {
     handleFullyConnected($evt) {
         l.debug('Caught Fully Connected');
         this.connectButton.textContent = 'Connected';
+    }
+
+    handleStepButtonClick($evt) {
+        l.debug('Caught Step Button Click');
+        this.geb.dispatchEvent(new JacEvent('requestManualStep'));
+    }
+
+    handlePlayButtonClick($evt) {
+        l.debug('Caught Play Button Click');
+        this.geb.dispatchEvent(new JacEvent('requestPlay'));
+    }
+
+    handlePauseButtonClick($evt) {
+        l.debug('Caught Pause Button Click');
+        this.geb.dispatchEvent(new JacEvent('requestPause'));
     }
 }

@@ -1,16 +1,18 @@
 'use strict';
 
-const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+//const CleanWebpackPlugin = require('clean-webpack-plugin');
 //const WebpackAutoInject = require('./forWebPack/webpack-auto-inject-version');
-const ImageminPlugin = require('imagemin-webpack-plugin').default;
+//const ImageminPlugin = require('imagemin-webpack-plugin').default;
+//const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 console.log('DIRNAME: ' + __dirname);
 const distDir = 'dist';
 const distDirPath = __dirname + '/../' + distDir;
 
 module.exports = {
+    mode: "production",
+
     entry: {
         indexEntry:'./js/index.js'
     },

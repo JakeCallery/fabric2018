@@ -15,22 +15,22 @@ export default class RequestManager extends EventDispatcher {
         this.uigeb = new UIGEB();
 
         //Delegates
-        this.requestSetNameDelegate = EventUtils.bind(self, self.handleRequestSetName);
-        this.nameSetDelegate = EventUtils.bind(self, self.handleNameSet);
+        this.requestSetInfoDelegate = EventUtils.bind(self, self.handleRequestSetInfo);
+        this.localClientInfoSetDelegate = EventUtils.bind(self, self.handleLocalClientInfoSet);
 
         //Events
-        this.geb.addEventListener('requestSetName', this.requestSetNameDelegate);
-        this.geb.addEventListener('nameSet', this.nameSetDelegate);
+        this.geb.addEventListener('requestSetInfo', this.requestSetInfoDelegate);
+        this.geb.addEventListener('localClientInfoSet', this.localClientInfoSetDelegate);
     }
 
-    handleNameSet($evt) {
-        l.debug('Caught name Set: ', $evt.data);
+    handleLocalClientInfoSet($evt) {
+        l.debug('Caught local Client info set: ', $evt.data);
         this.geb.dispatchEvent(new JacEvent('fullyConnected'));
     }
 
-    handleRequestSetName($evt) {
-        l.debug('Caught Request Set Name: ', $evt.data);
-        this.geb.dispatchEvent(new JacEvent('requestSetName', $evt.data));
+    handleRequestSetInfo($evt) {
+        l.debug('Caught Request Set Info: ', $evt.data);
+        this.geb.dispatchEvent(new JacEvent('requestSetInfo', $evt.data));
     }
 
 

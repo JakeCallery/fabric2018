@@ -7,11 +7,11 @@ let l = Log4js.getLogger(Path.basename(__filename));
 l.level = 'ALL';
 
 module.exports = class ClientsManager {
-    constructor($wssServer){
+    constructor($wssServer, $fullStateDO){
         l.debug('New Client Manager');
 
         this.wss = $wssServer;
-        this.clientList = [];
+        this.fullStateDO = $fullStateDO;
 
         this.init();
     }
@@ -30,11 +30,6 @@ module.exports = class ClientsManager {
             //Create new client obj
             let client = this.addClient($connection, $req);
             client.confirm();
-
-            //Send back clientID
-            let confirmMessage = new Message('confirmed', {clientId:client.id});
-            client.sendMessage(confirmMessage);
-
         });
 
     };
@@ -47,19 +42,48 @@ module.exports = class ClientsManager {
             this.removeClient(client.id);
         });
 
-        this.clientList.push(client);
+        client.on(Client.INFO_SET_EVENT, ($data) => {
+            l.debug('Caught Client Info Set: ', $data);
+            this.messageToOtherClients(client, 'remoteClientInfoSet', {
+                clientId:client.id,
+                clientName:$data.clientName,
+                clientColor:$data.clientColor
+            });
+
+            this.messageToClient(client, 'fullStateUpdate', this.fullStateDO.fullState);
+        });
+
+        client.on(Client.CLIENT_UPDATE_EVENT, ($data) => {
+            this.messageToOtherClients(client, 'remoteClientUpdate', {
+                clientId: client.id,
+                clientName: $data.clientName,
+                clientColor: $data.clientColor,
+                xPosList: $data.xPosList,
+                yPosList: $data.yPosList,
+                fieldValList: $data.fieldValList
+            }) ;
+        });
+
+        this.fullStateDO.clientList.push(client);
         l.debug('Added Client: ', client.id);
+
+        //Let other clients know
+        l.debug(client.id);
+        this.messageToOtherClients(client, 'remoteClientConnected',
+            {
+                clientId:client.id
+            });
 
         return client;
     }
 
     removeClient($clientId){
         l.trace('Removing Client: ' + $clientId);
-        let listLen = this.clientList.length;
+        let listLen = this.fullStateDO.clientList.length;
         let removedClient = null;
         for(let i = 0; i < listLen; i++){
-            if(this.clientList[i].id === $clientId){
-                removedClient = this.clientList.splice(i, 1);
+            if(this.fullStateDO.clientList[i].id === $clientId){
+                removedClient = this.fullStateDO.clientList.splice(i, 1)[0];
                 l.debug('Removed Client: ', $clientId);
                 break;
             }
@@ -69,32 +93,36 @@ module.exports = class ClientsManager {
             l.error('Failed to remove Client (not found): ', $clientId);
             return null;
         } else {
+            this.messageToOtherClients(removedClient, 'remoteClientDropped', {clientId:removedClient.id});
             return removedClient;
         }
 
     }
 
-    messageToClient($client, $msgType, $msg) {
+    messageToOtherClients($excludedClient, $msgType, $msg) {
+        for(let i = 0; i < this.fullStateDO.clientList.length; i++) {
+            let client = this.fullStateDO.clientList[i];
+            if(client !== $excludedClient) {
+                this.messageToClient(client, $msgType, $msg);
+            }
+        }
+    }
+
+    messageToClient($client, $msgAction, $msgData) {
         if(!$client){
-            l.error('No Client Provided, not sending message: ', $msg);
+            l.error('No Client Provided, not sending message: ', $msgData);
             return null;
         }
 
-        let message = {
-            messageType: $msgType,
-            clientId: $client.clientId,
-            message: $msg
-        };
-
-        $client.sendMessage(JSON.stringify(message));
+        $client.sendMessage(new Message($msgAction, $msgData));
     }
 
     getClientById($clientId){
-        let listLen = this.clientList.length;
+        let listLen = this.fullStateDO.clientList.length;
 
         for(let i = 0; i < listLen; i++){
-            if(this.clientList[i].clientId === $clientId){
-                return this.clientList[i];
+            if(this.fullStateDO.clientList[i].clientId === $clientId){
+                return this.fullStateDO.clientList[i];
             }
         }
 
@@ -105,7 +133,7 @@ module.exports = class ClientsManager {
 
     getClientIndex($clientId){
         for(let i = 0; i < listLen; i++) {
-            if (this.clientList[i].id === $clientId) {
+            if (this.fullStateDO.clientList[i].id === $clientId) {
                 return i;
             }
         }

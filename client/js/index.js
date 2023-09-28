@@ -9,10 +9,16 @@ import BrowserUtils from 'jac/utils/BrowserUtils';
 import UIManager from 'UIManager';
 import RequestManager from 'RequestManager';
 import LocalClient from 'LocalClient';
+import ClientsManager from 'ClientsManager';
+import MouseInput from 'MouseInput';
 
 //Import through loaders
 import '../css/normalize.css';
 import '../css/main.css';
+import DrawManager from 'DrawManager';
+import MainLoopManager from 'MainLoopManager';
+import InputManager from 'InputManager';
+import State from 'State';
 
 l.addLogTarget(new ConsoleTarget());
 l.verboseFilter = (VerboseLevel.NORMAL | VerboseLevel.TIME | VerboseLevel.LEVEL);
@@ -35,7 +41,15 @@ geb.addEventListener('wsOpened', ($evt) => {
 });
 
 //Init
-let localClient = new LocalClient();
+let clientsManager = new ClientsManager();
 let wsManager = new WSManager();
+
 let uiManager = new UIManager(document);
-let requestManager = new RequestManager();
+
+let state = new State();
+state.setClientsManager(clientsManager);
+let inputManager = new InputManager(window, clientsManager);
+inputManager.addInputDevice(new MouseInput(document));
+let drawManager = new DrawManager(window);
+let mainLoopManager = new MainLoopManager(window, inputManager, drawManager);
+//let requestManager = new RequestManager();

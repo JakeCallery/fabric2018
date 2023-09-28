@@ -19,10 +19,12 @@ export default class WSManager extends EventDispatcher {
         this.pingIntervalId = null;
 
         //Delegates
-        this.handleRequestConnectDelegate = EventUtils.bind(self, self.handleRequestConnect);
+        this.requestConnectDelegate = EventUtils.bind(self, self.handleRequestConnect);
+        this.messageToServerDelegate = EventUtils.bind(self, self.handleMessageToServer);
 
         //Events
-        this.geb.addEventListener('requestConnect', this.handleRequestConnectDelegate);
+        this.geb.addEventListener('requestConnect', this.requestConnectDelegate);
+        this.geb.addEventListener('messageToServer', this.messageToServerDelegate);
 
     }
 
@@ -36,10 +38,15 @@ export default class WSManager extends EventDispatcher {
         l.debug('Websocket URL: ' + websocketURL);
         self.connection = new WebSocket(websocketURL);
 
-        this.geb.addEventListener('setLocalClientName', ($evt) => {
-            l.debug('Sending Set Local Client Name Message: ', $evt.data);
+        this.geb.addEventListener('setLocalClientInfo', ($evt) => {
+            l.debug('Sending Set Local Client info Message: ', $evt.data);
 
-            let msg = new Message('setName', {name:$evt.data});
+            let msg = new Message('setInfo',
+                {
+                    name:$evt.data.name,
+                    color:$evt.data.color
+
+                });
             self.connection.send(msg.serialize());
         });
 
@@ -52,8 +59,9 @@ export default class WSManager extends EventDispatcher {
 
             //Start ping
             this.pingIntervalId = setInterval(() => {
+                //TODO: Put back ping eventually
                 //l.debug('Sending Ping');
-                this.sendPing();
+                //this.sendPing();
             }, 2000);
 
             this.geb.dispatchEvent(new JacEvent('wsOpened', $evt));
@@ -85,7 +93,7 @@ export default class WSManager extends EventDispatcher {
             else if($evt.code === 1009)
                 reason = "An endpoint is terminating the connection because it has received a message that is too big for it to process.";
             else if($evt.code === 1010) // Note that this status code is not used by the server, because it can fail the WebSocket handshake instead.
-                reason = "An endpoint (client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake. <br /> Specifically, the extensions that are needed are: " + event.reason;
+                reason = "An endpoint (client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake. Specifically, the extensions that are needed are: " + event.reason;
             else if($evt.code === 1011)
                 reason = "A server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request.";
             else if($evt.code === 1015)
@@ -118,25 +126,42 @@ export default class WSManager extends EventDispatcher {
 
             if(msgObj !== null) {
                 switch(msgObj.action) {
-                    case 'confirmed':
+                    //Messages for me
+                    case 'localClientConfirmed':
                         l.debug('Setting Connection ID to: ' + msgObj.data.clientId);
                         this.clientId = msgObj.data.clientId;
-                        this.geb.dispatchEvent(new JacEvent('clientConfirmed', msgObj.data.clientId));
+                        this.geb.dispatchEvent(new JacEvent('localClientConfirmed', msgObj.data.clientId));
                         break;
 
-                    case 'nameSet':
-                        l.debug('Name Set Message From Server');
-                        this.geb.dispatchEvent(new JacEvent('nameSet'));
+                    case 'localClientInfoSet':
+                        l.debug('local client info set from server: ', msgObj);
+                        this.geb.dispatchEvent(new JacEvent('localClientInfoSet', msgObj));
                         break;
 
-                    case 'clientConnected':
-                        l.debug('Additional Client Connection: ', msgObj.clientId);
+                    case 'fullStateUpdate':
+                        l.debug('Caught Full State Update', msgObj);
+                        this.geb.dispatchEvent(new JacEvent('fullStateUpdate', msgObj));
+                        break;
+
+                    //Messages from other clients
+                    case 'remoteClientInfoSet':
+                        l.debug('Other Client Info Set: ', msgObj);
+                        this.geb.dispatchEvent(new JacEvent('remoteClientInfoSet', msgObj));
+                        break;
+
+                    case 'remoteClientConnected':
+                        l.debug('Remote Client Connection: ', msgObj.data.clientId);
                         this.geb.dispatchEvent(new JacEvent('remoteClientConnected', msgObj.data.clientId));
                         break;
 
-                    case 'clientDropped':
-                        l.debug('Client Dropped: ', msgObj.clientId);
+                    case 'remoteClientDropped':
+                        l.debug('Remote Client Dropped: ', msgObj.data.clientId);
                         this.geb.dispatchEvent(new JacEvent('remoteClientDropped', msgObj.data.clientId));
+                        break;
+
+                    case 'remoteClientUpdate':
+                       //l.debug('Remote Client Update: ', msgObj.data.xPosList);
+                       this.geb.dispatchEvent(new JacEvent('remoteClientUpdate', msgObj.data));
                         break;
 
                     default:
@@ -174,10 +199,18 @@ export default class WSManager extends EventDispatcher {
         }
 
     }
+
     handleRequestConnect($evt) {
         l.debug('Caught Request Connect');
         this.init();
+    }
 
+    handleMessageToServer($evt) {
+        if(this.connection.readyState === this.connection.OPEN) {
+            this.connection.send($evt.data.serialize());
+        } else {
+            l.debug('Cannot send Message to server, connection not OPEN');
+        }
     }
 }
 
